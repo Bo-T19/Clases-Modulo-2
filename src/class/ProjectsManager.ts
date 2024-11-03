@@ -21,6 +21,11 @@ export class ProjectManager{
         {
             throw new Error(`A project with name "${data.name}" already exists`)
         }
+
+        if(data.name.length <5)
+        {
+            throw new Error(`The name must have at least 5 characters`)    
+        }
         const project = new Project(data)
         project.ui.addEventListener("click", () => 
         {
