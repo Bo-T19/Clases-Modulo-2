@@ -26,6 +26,8 @@ export class Project implements IProject
     progress: number = 0
     id: string
     initials: string
+    color: string
+    colorArray: string[] = ["#FF6F61","#6A5ACD", "#FFB347", "#3498DB", "#27AE60", "#C0392B"]
 
     constructor(data: IProject)
     {
@@ -41,11 +43,23 @@ export class Project implements IProject
     setUI () 
     {   if(this.ui) {return}
         
-        this.initials= (this.name.split(" ")[0][0]+ this.name.split(" ")[1][0]).toUpperCase()
+        
+        if(this.name.split(" ").length<2)
+        {
+          this.initials = (this.name.split(" ")[0][0]+ this.name.split(" ")[0][1]).toUpperCase()
+        }
+        else
+        {
+          this.initials = (this.name.split(" ")[0][0]+ this.name.split(" ")[1][0]).toUpperCase()
+        }
+
+        this.color = this.colorArray[Math.floor(Math.random() * (5 - 0))]
+
+
         this.ui = document.createElement("div")
         this.ui.className="project-card"
         this.ui.innerHTML = ` <div class="card-header">
-            <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">${this.initials}</p>
+            <p style="background-color: ${this.color}; padding: 10px; border-radius: 8px; aspect-ratio: 1;">${this.initials}</p>
             <div>
               <h5>${this.name}</h5>
               <p>${this.description}<</p>
