@@ -30,6 +30,7 @@ export class ProjectManager{
             {
                 projectsPage.style.display = "none"
                 detailsPage.style.display = "flex"
+                this.setDetailsPage(project)
             }
             
             
@@ -38,6 +39,15 @@ export class ProjectManager{
         this.ui.append(project.ui)
         this.list.push(project)
         return project
+    }
+
+
+    private setDetailsPage(project : Project)
+    {
+        const detailsPage = document.getElementById("project-details")
+        if (!detailsPage){return}
+        const name = detailsPage.querySelector("[data-project-info='name']")
+        if (name) {name.textContent = project.name}
     }
 
     defaultProject()
