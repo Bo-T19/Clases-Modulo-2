@@ -26,7 +26,16 @@ export class ProjectManager{
         {
             throw new Error(`The name must have at least 5 characters`)    
         }
+
+        if(data.finishDate.toDateString() =="Invalid Date")
+        {
+            data.finishDate=new Date(2024,1,1)
+        }
+               
         const project = new Project(data)
+
+
+
         project.ui.addEventListener("click", () => 
         {
             const projectsPage = document.getElementById("projects-page")
@@ -37,8 +46,7 @@ export class ProjectManager{
                 detailsPage.style.display = "flex"
                 this.setDetailsPage(project)
             }
-            
-            
+ 
         })
 
         this.ui.append(project.ui)
