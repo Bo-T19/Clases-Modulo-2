@@ -94,6 +94,14 @@ export class ProjectManager{
             });
         }
 
+        const initials = detailsPage.querySelectorAll("[data-project-info='name-initials']")
+        if (initials) 
+        {
+            initials.forEach(element => {
+                element.textContent= project.initials
+            });
+        }
+
     }
 
     defaultProject()
