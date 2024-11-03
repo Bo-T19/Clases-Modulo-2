@@ -46,8 +46,54 @@ export class ProjectManager{
     {
         const detailsPage = document.getElementById("project-details")
         if (!detailsPage){return}
-        const name = detailsPage.querySelector("[data-project-info='name']")
-        if (name) {name.textContent = project.name}
+        const name = detailsPage.querySelectorAll("[data-project-info='name']")
+        if (name) 
+        {
+            name.forEach(element => {
+                element.textContent=project.name
+            });
+        }
+
+        const description = detailsPage.querySelectorAll("[data-project-info='description']")
+        if (description) 
+        {
+            description.forEach(element => {
+                element.textContent=project.description
+            });
+        }
+
+        const status = detailsPage.querySelectorAll("[data-project-info='status']")
+        if (status) 
+        {
+            status.forEach(element => {
+                element.textContent=project.status
+            });
+        }
+
+        const role = detailsPage.querySelectorAll("[data-project-info='role']")
+        if (role) 
+        {
+            role.forEach(element => {
+                element.textContent=project.userRole
+            });
+        }
+
+        const cost = detailsPage.querySelectorAll("[data-project-info='cost']")
+        if (cost) 
+        {
+            cost.forEach(element => {
+                element.textContent= project.cost as unknown as string 
+            });
+        }
+
+        const date = detailsPage.querySelectorAll("[data-project-info='finish-date']")
+        if (date) 
+        {
+            date.forEach(element => {
+                element.textContent= project.finishDate.toLocaleDateString("es-ES")
+            });
+        }
+
     }
 
     defaultProject()
