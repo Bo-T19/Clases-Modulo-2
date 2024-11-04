@@ -135,7 +135,7 @@ export class ProjectManager {
         })
 
         const nameInUse = projectNames.includes(completeData.name)
-        if (nameInUse) {
+        if (nameInUse && completeData.name !==project.name) {
             throw new Error(`A project with name "${completeData.name}" already exists`)
         }
 
