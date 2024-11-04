@@ -179,7 +179,8 @@ if (newToDoForm && newToDoForm instanceof HTMLFormElement) {
 
     const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
     const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
-    const projectToBeEdited: Project = projectsManager.getProjectByName("Default project")!
+    console.log(projectToBeEditedName)
+    const projectToBeEdited: Project = projectsManager.getProjectByName(projectToBeEditedName)!
 
 
 
@@ -200,63 +201,20 @@ if (newToDoForm && newToDoForm instanceof HTMLFormElement) {
             newToDoForm.reset()
             toggleModal("new-todo-modal")
             //aquí comienza lo malo
-            const toDoUIs = (document.querySelectorAll("[data-project-info='todo-item']"))
+            const toDoUIs = (document.querySelectorAll("[data-project-info='todo-list']"))
             toDoUIList = []
-            for (const ui of toDoUIs)
-            {
-
+            for (const ui of toDoUIs) {
 
                 toDoUIList.push(ui as HTMLElement)
 
                 ui.addEventListener("click", () => {
                     toggleModal("edit-todo-modal")
                 })
-    
-    
-    
-                try {
-                    const taskToChange: string = ui.querySelector("[data-project-info='todo-description']")?.textContent!
-    
-                    const projectWithTask: string = document.querySelector("[data-project-info='name']")?.textContent!
-    
-    
-                    const editToDoForm = document.getElementById("edit-todo-form") as HTMLFormElement
-                   
-                    editToDoForm?.addEventListener("submit", (e) => {
-    
-                        e.preventDefault()
-                        
-                        const formData = new FormData(editToDoForm)
-    
-                        const editToDoData =
-                        {
-                            status: formData.get("status") as TaskStatus
-                        }
-                        projectsManager.getTaskByDescription(projectWithTask, taskToChange)!.status = editToDoData.status
-                        editToDoForm.reset()
-                        toggleModal("edit-todo-modal")
-                        console.log(projectsManager.getTaskByDescription(projectWithTask, taskToChange))
-    
-                    })
-                    
-    
-    
-                }
-                catch (error) {
-                    alert(error)
-                }
-    
             }
-
-
-
-
-
         }
         catch (error) {
             alert(error)
         }
-
 
     })
 

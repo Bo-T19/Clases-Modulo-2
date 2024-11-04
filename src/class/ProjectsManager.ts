@@ -1,6 +1,7 @@
 
 import { IProject, Project, ProjectStatus, UserRole } from "./Project"
-import { ToDo, IToDo, TaskStatus } from './ToDo'  
+import { ToDo, IToDo, TaskStatus } from './ToDo'
+
 
 export interface ICompleteProject {
     name: string
@@ -13,11 +14,9 @@ export interface ICompleteProject {
 
 }
 
-export class ProjectManager 
-{
+export class ProjectManager {
     list: Project[] = []
     ui: HTMLElement
-    toDoColorList: string[] = ["#008000","#8B4513","#FF0000"]
     constructor(container: HTMLElement) {
         this.ui = container
     }
@@ -123,7 +122,7 @@ export class ProjectManager
                                     background-color: green; 
                                     padding: 4px 0; 
                                     text-align: center;">${project.progress.toString()}%</div>`
-                
+
             })
         }
 
@@ -131,10 +130,9 @@ export class ProjectManager
 
     editProject(project: Project, completeData: ICompleteProject) {
 
-        const projectNames = this.list.map((project) => 
-            {
+        const projectNames = this.list.map((project) => {
             return project.name
-            })
+        })
 
         const nameInUse = projectNames.includes(completeData.name)
         if (nameInUse) {
@@ -146,179 +144,158 @@ export class ProjectManager
         }
 
         for (const key in completeData) {
-            if (project.hasOwnProperty(key) && completeData[key]) 
-            {
-                project[key] = completeData[key];  
+            if (project.hasOwnProperty(key) && completeData[key]) {
+                project[key] = completeData[key];
             }
         }
-        
-       
+
+
         this.setDetailsPage(project)
     }
 
-    addToDo(project: Project, toDo: IToDo)
-    {
+    addToDo(project: Project, data: IToDo) {
 
-        let color : string
+        let color: string
 
-        if (toDo.date.toDateString() == "Invalid Date") 
-        {
-            toDo.date = new Date(2024, 1, 1)
+        if (data.date.toDateString() == "Invalid Date") {
+            data.date = new Date(2024, 1, 1)
         }
+
+        const toDo = new ToDo(data)
+
         project.toDoList.push(toDo)
-
-
-        switch(toDo.status)
-        {
-            case "Finished":
-                color = this.toDoColorList[0]
-                break;
-
-            case "Pending":
-                color = this.toDoColorList[1]
-                break;
-            case "Overdue":
-                color = this.toDoColorList[2]
-                break;
-            default:
-                color = this.toDoColorList[1]
-                break;
-            
+        const toDoList = document.getElementById("todo-list")
+        if (toDoList) {
+            toDoList.append(toDo.ui)
         }
-        
 
-        const detailsPage = document.getElementById("project-details")
-        if (!detailsPage) { return }
-        const toDoList = detailsPage.querySelector("[data-project-info='todo-list']")
-        if (toDoList)
-        {
+        toDo.ui.addEventListener("click", (e) => {
 
-            toDoList.innerHTML +=  `<div class="todo-item" data-project-info= "todo-item" style= "background-color: ${color} ">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div style="display: flex; column-gap: 15px; align-items: center;">
-                    <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span>
-                    <p data-project-info="todo-description">${toDo.description}</p>
-                  </div>
-                  <p style="text-wrap: nowrap; margin-left: 10px;">${toDo.date.toLocaleDateString("es-ES")}</p>
-                </div>
-              </div>` 
-        }
+            const editToDoModal = document.getElementById("edit-todo-modal") as HTMLDialogElement
+            editToDoModal.showModal()
+            const editToDoForm = document.getElementById("edit-todo-form")
+
+            if (editToDoForm && editToDoForm instanceof HTMLFormElement) {
+                editToDoForm.addEventListener("submit", (e) => {
+                    e.preventDefault()
+                    const formData = new FormData(editToDoForm)
+                    const editToDoData =
+                    {
+                        status: formData.get("status") as TaskStatus,
+                    }
+                    toDo.status = editToDoData.status
+                    toDo.setUIColor()
+                    editToDoModal.close()
+                }
+                )
+            }
+        })
 
 
     }
 
-    defaultProject()
-        {
-            const defaultData: IProject = {
-                name: "Default project",
-                description: "Default description",
-                status: "pending",
-                userRole: "architect",
-                finishDate: new Date(2024, 10, 28)
-            }
-
-            this.newProject(defaultData)
+    defaultProject() {
+        const defaultData: IProject = {
+            name: "Default project",
+            description: "Default description",
+            status: "pending",
+            userRole: "architect",
+            finishDate: new Date(2024, 10, 28)
         }
 
-        getProject(id: string)
-        {
-            const project = this.list.find((project) => {
-                return project.id === id
-            })
-            return project
-        }
+        this.newProject(defaultData)
+    }
 
-        getProjectByName(name: string)
-        {
-            const project = this.list.find((project) => {
-                return project.name === name
-            })
-            return project
-        }
+    getProject(id: string) {
+        const project = this.list.find((project) => {
+            return project.id === id
+        })
+        return project
+    }
 
-        
-        getTaskByDescription(projectName : string, taskDescription: string)
-        {
-            const project = this.list.find((project) => {
-                return project.name === projectName
-            })
-             
-            if (project)
-            {
+    getProjectByName(name: string) {
+        const project = this.list.find((project) => {
+            return project.name === name
+        })
+        return project
+    }
+
+
+    getTaskByDescription(projectName: string, taskDescription: string) {
+        const project = this.list.find((project) => {
+            return project.name === projectName
+        })
+
+        if (project) {
             const task = project.toDoList.find((task) => {
                 return task.description === taskDescription
             })
             return task
-            }
-            else {return}
-            
         }
+        else { return }
 
-        editTaskStatus(projectName : string, taskDescription: string, newStatus: TaskStatus)
-        {
-            this.getTaskByDescription(projectName, taskDescription)!.status = newStatus
-            
-        }
-
-        totalCostOfProjects()
-        {
-            const initialCost: number = 0
-            const sumWithInitialCost: number = this.list.reduce(
-                (accumulator, currentValue) => accumulator + currentValue.cost, initialCost
-            )
-
-            return sumWithInitialCost
-        }
-
-        deleteProject(id: string)
-        {
-            const project = this.getProject(id)
-            if (!project) { return }
-            project.ui.remove()
-            const remaining = this.list.filter((project) => {
-                return project.id !== id
-            })
-
-            this.list = remaining
-        }
-
-        exportToJSON(fileName : string = "projects")
-        {
-            const json = JSON.stringify(this.list, null, 2)
-            const blob = new Blob([json], { type: "application/json" })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = fileName
-            a.click()
-            URL.revokeObjectURL(url)
-        }
-
-        importFromJSON()
-        {
-            const input = document.createElement('input')
-            input.type = 'file'
-            input.accept = 'application/json'
-            const reader = new FileReader()
-            reader.addEventListener("load", () => {
-                const json = reader.result
-                if (!json) { return }
-                const projects: IProject[] = JSON.parse(json as string)
-                for (const project of projects) {
-                    try {
-                        this.newProject(project)
-                    } catch (error) {
-
-                    }
-                }
-            })
-
-            input.addEventListener('change', () => {
-                const filesList = input.files
-                if (!filesList) { return }
-                reader.readAsText(filesList[0])
-
-            })
-            input.click
-        }
     }
+
+    editTaskStatus(projectName: string, taskDescription: string, newStatus: TaskStatus) {
+        this.getTaskByDescription(projectName, taskDescription)!.status = newStatus
+
+    }
+
+    totalCostOfProjects() {
+        const initialCost: number = 0
+        const sumWithInitialCost: number = this.list.reduce(
+            (accumulator, currentValue) => accumulator + currentValue.cost, initialCost
+        )
+
+        return sumWithInitialCost
+    }
+
+    deleteProject(id: string) {
+        const project = this.getProject(id)
+        if (!project) { return }
+        project.ui.remove()
+        const remaining = this.list.filter((project) => {
+            return project.id !== id
+        })
+
+        this.list = remaining
+    }
+
+    exportToJSON(fileName: string = "projects") {
+        const json = JSON.stringify(this.list, null, 2)
+        const blob = new Blob([json], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
+    importFromJSON() {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'application/json'
+        const reader = new FileReader()
+        reader.addEventListener("load", () => {
+            const json = reader.result
+            if (!json) { return }
+            const projects: IProject[] = JSON.parse(json as string)
+            for (const project of projects) {
+                try {
+                    this.newProject(project)
+                } catch (error) {
+
+                }
+            }
+        })
+
+        input.addEventListener('change', () => {
+            const filesList = input.files
+            if (!filesList) { return }
+            reader.readAsText(filesList[0])
+
+        })
+        input.click
+    }
+}
