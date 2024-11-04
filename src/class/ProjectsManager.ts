@@ -59,6 +59,7 @@ export class ProjectManager {
                 projectsPage.style.display = "none"
                 detailsPage.style.display = "flex"
                 this.setDetailsPage(project)
+                console.log(this.list)
             }
 
         })
@@ -131,6 +132,21 @@ export class ProjectManager {
             })
         }
 
+        
+        const detailsPageToDoList = document.getElementById("todo-list")
+        if (detailsPageToDoList) {
+
+            while (detailsPageToDoList.firstChild) {
+                detailsPageToDoList.removeChild(detailsPageToDoList.firstChild);
+            }
+            
+            for (const toDo of project.toDoList)
+            {
+                detailsPageToDoList.append(toDo.ui)
+            }
+            
+        }
+
     }
 
     editProject(project: Project, completeData: ICompleteProject) {
@@ -172,12 +188,10 @@ export class ProjectManager {
         }
 
         const toDo = new ToDo(data)
-
+        
         project.toDoList.push(toDo)
-        const toDoList = document.getElementById("todo-list")
-        if (toDoList) {
-            toDoList.append(toDo.ui)
-        }
+
+        this.setDetailsPage(project)
 
         toDo.ui.addEventListener("click", (e) => {
 
@@ -200,6 +214,8 @@ export class ProjectManager {
                 )
             }
         })
+
+       
 
 
     }

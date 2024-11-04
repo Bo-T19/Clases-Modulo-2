@@ -53,7 +53,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
             const myProject = projectsManager.newProject(projectData)
             projectForm.reset()
             toggleModal("new-project-modal")
-            console.log(projectsManager.list)
+
         }
         catch (error) {
             alert(error)
@@ -129,7 +129,7 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
             projectsManager.editProject(projectToBeEdited, newProjectData)
             editProjectForm.reset()
             toggleModal("edit-project-modal")
-            console.log(projectsManager.list)
+
             
         }
         catch (error) {
@@ -203,17 +203,7 @@ if (newToDoForm && newToDoForm instanceof HTMLFormElement) {
             projectsManager.addToDo(projectToBeEdited, newToDoData)
             newToDoForm.reset()
             toggleModal("new-todo-modal")
-            //aquí comienza lo malo
-            const toDoUIs = (document.querySelectorAll("[data-project-info='todo-list']"))
-            toDoUIList = []
-            for (const ui of toDoUIs) {
-
-                toDoUIList.push(ui as HTMLElement)
-
-                ui.addEventListener("click", () => {
-                    toggleModal("edit-todo-modal")
-                })
-            }
+            console.log(projectsManager.list)
         }
         catch (error) {
             alert(error)
