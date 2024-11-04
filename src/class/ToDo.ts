@@ -29,9 +29,9 @@ export class ToDo {
 
   setUI() {
 
-    
 
-    if (this.ui) { return }
+
+    if (this.ui) {return;}
 
     this.ui = document.createElement("div")
     this.ui.className = "todo-item"
@@ -42,12 +42,15 @@ export class ToDo {
     </div>
     <p style="text-wrap: nowrap; margin-left: 10px;">${this.date.toLocaleDateString("es-ES")}</p>
   </div>`
-  this.setUIColor()
+    this.setUIColor()
+
 
   }
 
-  setUIColor()
-  {
+
+
+
+  setUIColor() {
     switch (this.status) {
       case "Finished":
         this.color = this.toDoColorList[0]

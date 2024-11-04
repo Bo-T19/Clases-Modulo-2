@@ -53,11 +53,13 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
             const myProject = projectsManager.newProject(projectData)
             projectForm.reset()
             toggleModal("new-project-modal")
+            console.log(projectsManager.list)
         }
         catch (error) {
             alert(error)
         }
 
+        
     })
 
     const cancelButton = document.getElementById("form-cancel-button")
@@ -102,15 +104,15 @@ const editProjectForm = document.getElementById("edit-project-form")
 
 if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
 
-    const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
-    const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
-    const projectToBeEdited: Project = projectsManager.getProjectByName("Default project")!
-
-
-
 
     editProjectForm.addEventListener("submit", (e) => {
         e.preventDefault()
+
+
+        const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
+        const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
+        const projectToBeEdited: Project = projectsManager.getProjectByName(projectToBeEditedName)!
+
         const formData = new FormData(editProjectForm)
 
         const newProjectData: ICompleteProject =
@@ -127,6 +129,8 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
             projectsManager.editProject(projectToBeEdited, newProjectData)
             editProjectForm.reset()
             toggleModal("edit-project-modal")
+            console.log(projectsManager.list)
+            
         }
         catch (error) {
             alert(error)
@@ -140,6 +144,7 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
         cancelButton.addEventListener("click", () => {
             editProjectForm.reset()
             toggleModal("edit-project-modal")
+            
         })
     }
     else {
@@ -177,15 +182,13 @@ const newToDoForm = document.getElementById("new-todo-form")
 
 if (newToDoForm && newToDoForm instanceof HTMLFormElement) {
 
-    const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
-    const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
-    console.log(projectToBeEditedName)
-    const projectToBeEdited: Project = projectsManager.getProjectByName(projectToBeEditedName)!
-
-
 
     newToDoForm.addEventListener("submit", (e) => {
         e.preventDefault()
+
+        const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
+        const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
+        const projectToBeEdited: Project = projectsManager.getProjectByName(projectToBeEditedName)!
 
         const formData = new FormData(newToDoForm)
 

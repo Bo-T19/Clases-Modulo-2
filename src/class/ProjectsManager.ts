@@ -42,8 +42,15 @@ export class ProjectManager {
         const project = new Project(data)
 
 
+        this.addProjectCardEventListener(project)
+
+        this.ui.append(project.ui)
+        this.list.push(project)
+        return project
+    }
 
 
+    addProjectCardEventListener(project) {
         project.ui.addEventListener("click", () => {
             const projectsPage = document.getElementById("projects-page")
             const detailsPage = document.getElementById("project-details")
@@ -55,12 +62,7 @@ export class ProjectManager {
             }
 
         })
-
-        this.ui.append(project.ui)
-        this.list.push(project)
-        return project
     }
-
 
     private setDetailsPage(project: Project) {
         const detailsPage = document.getElementById("project-details")
@@ -107,12 +109,15 @@ export class ProjectManager {
             });
         }
 
-        const initials = detailsPage.querySelectorAll("[data-project-info='name-initials']")
+        const initials: HTMLElement = detailsPage.querySelector("[data-project-info='name-initials']")!
         if (initials) {
-            initials.forEach(element => {
-                element.textContent = project.initials
-            });
-        }
+
+            initials.textContent = project.initials
+            initials.style.backgroundColor = project.color
+
+        };
+
+
 
         const progress = detailsPage.querySelectorAll("[data-project-info='progress']")
         if (progress) {
@@ -135,12 +140,15 @@ export class ProjectManager {
         })
 
         const nameInUse = projectNames.includes(completeData.name)
-        if (nameInUse && completeData.name !==project.name) {
-            throw new Error(`A project with name "${completeData.name}" already exists`)
-        }
+        if (completeData.name) {
 
-        if (completeData.name.length < 5) {
-            throw new Error(`The name must have at least 5 characters`)
+            if (nameInUse && completeData.name !== project.name) {
+                throw new Error(`A project with name "${completeData.name}" already exists`)
+            }
+
+            if (completeData.name.length < 5) {
+                throw new Error(`The name must have at least 5 characters`)
+            }
         }
 
         for (const key in completeData) {
@@ -149,7 +157,9 @@ export class ProjectManager {
             }
         }
 
-
+        project.setUI()
+        this.ui.append(project.ui)
+        this.addProjectCardEventListener(project)
         this.setDetailsPage(project)
     }
 
