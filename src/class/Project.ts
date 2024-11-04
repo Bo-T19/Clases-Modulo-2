@@ -1,6 +1,7 @@
 export type ProjectStatus = "pending"|"active"|"finished"
 export type UserRole = "architect"|"engineer"|"developer"
 import {v4 as uuidv4} from 'uuid'
+import { ToDo, IToDo } from './ToDo'  
 
 export interface IProject{
     name : string
@@ -8,6 +9,7 @@ export interface IProject{
     status: ProjectStatus
     userRole : UserRole
     finishDate: Date
+ 
 }
 
 export class Project implements IProject
@@ -28,6 +30,7 @@ export class Project implements IProject
     initials: string
     color: string
     colorArray: string[] = ["#FF6F61","#6A5ACD", "#FFB347", "#3498DB", "#27AE60", "#C0392B"]
+    toDoList: ToDo[] = []
 
     constructor(data: IProject)
     {

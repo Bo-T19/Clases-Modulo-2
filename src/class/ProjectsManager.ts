@@ -1,5 +1,6 @@
 
 import { IProject, Project, ProjectStatus, UserRole } from "./Project"
+import { ToDo, IToDo, TaskStatus } from './ToDo'  
 
 export interface ICompleteProject {
     name: string
@@ -16,7 +17,7 @@ export class ProjectManager
 {
     list: Project[] = []
     ui: HTMLElement
-
+    toDoColorList: string[] = ["#008000","#8B4513","#FF0000"]
     constructor(container: HTMLElement) {
         this.ui = container
     }
@@ -155,7 +156,58 @@ export class ProjectManager
         this.setDetailsPage(project)
     }
 
-        defaultProject()
+    addToDo(project: Project, toDo: IToDo)
+    {
+
+        let color : string
+
+        if (toDo.date.toDateString() == "Invalid Date") 
+        {
+            toDo.date = new Date(2024, 1, 1)
+        }
+        project.toDoList.push(toDo)
+
+
+        switch(toDo.status)
+        {
+            case "Finished":
+                color = this.toDoColorList[0]
+                break;
+
+            case "Pending":
+                color = this.toDoColorList[1]
+                break;
+            case "Overdue":
+                color = this.toDoColorList[2]
+                break;
+            default:
+                color = this.toDoColorList[1]
+                break;
+            
+        }
+        
+
+        const detailsPage = document.getElementById("project-details")
+        if (!detailsPage) { return }
+        const toDoList = detailsPage.querySelector("[data-project-info='todo-list']")
+        if (toDoList)
+        {
+
+            toDoList.innerHTML +=  `<div class="todo-item" data-project-info= "todo-item" style= "background-color: ${color} ">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; column-gap: 15px; align-items: center;">
+                    <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span>
+                    <p data-project-info="todo-description">${toDo.description}</p>
+                  </div>
+                  <p style="text-wrap: nowrap; margin-left: 10px;">${toDo.date.toLocaleDateString("es-ES")}</p>
+                </div>
+              </div>` 
+        }
+
+
+    }
+
+    defaultProject()
         {
             const defaultData: IProject = {
                 name: "Default project",
@@ -182,6 +234,30 @@ export class ProjectManager
                 return project.name === name
             })
             return project
+        }
+
+        
+        getTaskByDescription(projectName : string, taskDescription: string)
+        {
+            const project = this.list.find((project) => {
+                return project.name === projectName
+            })
+             
+            if (project)
+            {
+            const task = project.toDoList.find((task) => {
+                return task.description === taskDescription
+            })
+            return task
+            }
+            else {return}
+            
+        }
+
+        editTaskStatus(projectName : string, taskDescription: string, newStatus: TaskStatus)
+        {
+            this.getTaskByDescription(projectName, taskDescription)!.status = newStatus
+            
         }
 
         totalCostOfProjects()
