@@ -1,5 +1,5 @@
-import { IProject, ProjectStatus, UserRole } from "./class/Project"
-import { ProjectManager } from "./class/ProjectsManager"
+import { IProject, ProjectStatus, UserRole, Project } from "./class/Project"
+import { ProjectManager, ICompleteProject } from "./class/ProjectsManager"
 
 
 
@@ -81,8 +81,89 @@ if(projectForm && projectForm instanceof HTMLFormElement)
             console.warn("Cancel button was not found")   
         }
 
+}
+else
+{
+    console.warn("The project form was not found. Check the ID!")
+}
 
 
+
+
+//This code is for updating the project from the datails page
+
+const editProjectBtn = document.getElementById("edit-project")
+
+if(editProjectBtn !== null) 
+{
+
+    editProjectBtn.addEventListener("click", () =>{
+    toggleModal("edit-project-modal")
+   
+    }
+)    
+    
+}
+else
+{
+    console.warn("Edit projects button was not found")   
+}
+
+const editProjectForm = document.getElementById("edit-project-form")
+
+
+if(editProjectForm && editProjectForm instanceof HTMLFormElement)
+{
+
+    const projectToBeEditedContainer = document.querySelector("[data-project-info='name']")!
+    const projectToBeEditedName: string = projectToBeEditedContainer.textContent!
+    const projectToBeEdited: Project = projectsManager.getProjectByName("Default project")!
+
+
+
+
+    editProjectForm.addEventListener("submit", (e) => 
+        {
+            e.preventDefault()
+            const formData = new FormData(editProjectForm)
+
+            const newProjectData: ICompleteProject =
+            {
+                name: formData.get("name") as string,
+                description: formData.get("description") as string,
+                status: formData.get("status") as ProjectStatus,
+                userRole: formData.get("role") as UserRole,
+                finishDate: new Date(formData.get("date") as string),
+                cost: formData.get("cost") as unknown as number, 
+                progress: formData.get("progress") as unknown as number 
+            }
+            try
+            {
+                projectsManager.editProject(projectToBeEdited,newProjectData)
+                editProjectForm.reset()
+                toggleModal("edit-project-modal")
+            }
+            catch(error)
+            {
+                alert(error)
+            }
+
+        })
+        
+    const cancelButton = document.getElementById("edit-form-cancel-button")
+  
+    if(cancelButton) 
+        {
+            cancelButton.addEventListener("click", ()=>
+                {
+                    editProjectForm.reset()
+                    toggleModal("edit-project-modal")
+                }) 
+        }
+    else
+        {
+            console.warn("Cancel button was not found")   
+        }
 
 
 }
@@ -94,9 +175,8 @@ else
 
 const projectsPage = document.getElementById("projects-page")
 const detailsPage = document.getElementById("project-details")
-
-
 const homeButton = document.getElementById("home button")
+
 if(homeButton && projectsPage && detailsPage){
 homeButton.addEventListener("click", ()=>
 {   projectsPage.style.display = "flex"
