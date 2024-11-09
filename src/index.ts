@@ -232,6 +232,27 @@ else {
 
 
 
+//This code is for the import projects option
+
+const uploadBtn= document.getElementById("upload")
+
+if (uploadBtn !== null) {
+    uploadBtn.addEventListener("click", () => projectsManager.importFromJSON())
+}
+else {
+    console.warn("Upload projects button not found")
+}
+
+//This code is for de export projects option
+
+const downloadBtn= document.getElementById("download")
+
+if (downloadBtn !== null) {
+    downloadBtn.addEventListener("click", () => projectsManager.exportToJSON())
+}
+else {
+    console.warn("Download projects button not found")
+}
 
 
 const projectsPage = document.getElementById("projects-page")

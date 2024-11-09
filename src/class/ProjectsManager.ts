@@ -16,17 +16,15 @@ export interface ICompleteProject {
 
 export class ProjectManager {
     list: Project[] = []
+    projectNames: string[] = []
     ui: HTMLElement
     constructor(container: HTMLElement) {
         this.ui = container
     }
 
     newProject(data: IProject) {
-        const projectNames = this.list.map((project) => {
-            return project.name
-        })
 
-        const nameInUse = projectNames.includes(data.name)
+        const nameInUse = this.projectNames.includes(data.name)
         if (nameInUse) {
             throw new Error(`A project with name "${data.name}" already exists`)
         }
@@ -35,10 +33,10 @@ export class ProjectManager {
             throw new Error(`The name must have at least 5 characters`)
         }
 
-        if (data.finishDate.toDateString() == "Invalid Date") {
+        if (isNaN(data.finishDate.getDate()) ) {
             data.finishDate = new Date(2024, 1, 1)
         }
-
+        
         const project = new Project(data)
 
 
@@ -46,6 +44,7 @@ export class ProjectManager {
 
         this.ui.append(project.ui)
         this.list.push(project)
+        this.projectNames.push(project.name)
         return project
     }
 
@@ -132,19 +131,18 @@ export class ProjectManager {
             })
         }
 
-        
+
         const detailsPageToDoList = document.getElementById("todo-list")
         if (detailsPageToDoList) {
 
             while (detailsPageToDoList.firstChild) {
                 detailsPageToDoList.removeChild(detailsPageToDoList.firstChild);
             }
-            
-            for (const toDo of project.toDoList)
-            {
+
+            for (const toDo of project.toDoList) {
                 detailsPageToDoList.append(toDo.ui)
             }
-            
+
         }
 
     }
@@ -167,16 +165,22 @@ export class ProjectManager {
             }
         }
 
-        for (const key in completeData) {
-            if (project.hasOwnProperty(key) && completeData[key]) {
-                project[key] = completeData[key];
-            }
-        }
+
+        this.updateProjectData(completeData, project)
 
         project.setUI()
         this.ui.append(project.ui)
         this.addProjectCardEventListener(project)
         this.setDetailsPage(project)
+    }
+
+    updateProjectData(data: object, project: Project) {
+
+        for (const key in data) {
+            if (project.hasOwnProperty(key) && data[key]) {
+                project[key] = data[key];
+            }
+        }
     }
 
     addToDo(project: Project, data: IToDo) {
@@ -188,7 +192,7 @@ export class ProjectManager {
         }
 
         const toDo = new ToDo(data)
-        
+
         project.toDoList.push(toDo)
 
         this.setDetailsPage(project)
@@ -215,7 +219,7 @@ export class ProjectManager {
             }
         })
 
-       
+
 
 
     }
@@ -306,12 +310,44 @@ export class ProjectManager {
         reader.addEventListener("load", () => {
             const json = reader.result
             if (!json) { return }
-            const projects: IProject[] = JSON.parse(json as string)
-            for (const project of projects) {
-                try {
-                    this.newProject(project)
-                } catch (error) {
+            const projects: ICompleteProject[] = JSON.parse(json as string)
+            
 
+            for (const project of projects) {
+                const nameInUse = this.projectNames.includes(project.name)
+                if (nameInUse) {
+                    try {
+                        const updateProjectData: ICompleteProject =
+                        {
+                            name :  project.name,
+                            userRole: project.userRole,
+                            status: project.status,
+                            description: project.description,
+                            finishDate: new Date(project.finishDate),
+                            cost: project.cost,
+                            progress: project.progress
+                        }
+
+                        this.editProject(this.getProjectByName(project.name)!,updateProjectData)
+                    }
+                    catch (error) {
+                        console.log(error)
+                    }
+                }
+                else {
+                    try {
+                        const newProjectData: IProject =
+                        {
+                            name :  project.name,
+                            userRole: project.userRole,
+                            status: project.status,
+                            description: project.description,
+                            finishDate: new Date(project.finishDate),
+                        }
+                        this.newProject(newProjectData)
+                    } catch (error) {
+
+                    }
                 }
             }
         })
@@ -322,6 +358,8 @@ export class ProjectManager {
             reader.readAsText(filesList[0])
 
         })
-        input.click
+        input.click()
     }
+         
 }
+   
