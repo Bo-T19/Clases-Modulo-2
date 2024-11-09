@@ -98,7 +98,7 @@ export class ProjectManager {
         const cost = detailsPage.querySelectorAll("[data-project-info='cost']")
         if (cost) {
             cost.forEach(element => {
-                element.textContent = project.cost as unknown as string
+                element.textContent ="$" + project.cost as unknown as string
             });
         }
 
